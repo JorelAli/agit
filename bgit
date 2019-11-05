@@ -1,9 +1,12 @@
 #!/bin/sh
 
-DIM="\e[2m"
 RED="\e[31m"
-RESET="\e[0m"
 CYAN="\e[36m"
+
+DIM="\e[2m"
+RESET="\e[0m"
+BOLD="\e[1m"
+UNDERLINE="\e[4m"
 
 ########################################################
 
@@ -12,8 +15,47 @@ printMsg () {
 }
 
 printHelp () {
-	printMsg "Welcome to bGit, a simpler git interface. You are running bGit ${GREEN}0.1" 
+	printMsg "Welcome to bGit, a simpler git interface. You are running bGit ${CYAN}0.1" 
 
+	printMsg ""
+	printMsg "Here's the list of commands:"
+	printMsg ""
+	printMsg "    ${UNDERLINE}${DIM}Information commands"
+	printMsg "    ${CYAN}bgit helper"
+	printMsg "        Runs the ${CYAN}bgit helper${RESET}. This helps identify any"
+	printMsg "        issues with the state of the repository and advises you on"
+	printMsg "        what you can do next if you get stuck."
+	printMsg ""
+	printMsg "    ${CYAN}bgit info"
+	printMsg "        Display the current working state. This will display"
+	printMsg "        information on what branch you're in, what actions"
+	printMsg "        are available and what you can do."
+	printMsg ""
+	printMsg "    ${UNDERLINE}${DIM}Main commands"
+	printMsg "    ${CYAN}bgit init"
+	printMsg "        Sets up a default repository, and initializes bgit for use."
+	printMsg ""
+	printMsg "    ${UNDERLINE}${DIM}Branch commands"
+	printMsg "    ${CYAN}bgit goto <branch>"
+	printMsg "        Goes to a certain branch. This will create a new branch if"
+	printMsg "        it doesn't already exist"
+	printMsg ""
+	printMsg "    ${CYAN}bgit ${RED}prune ${CYAN}<branch>"
+	printMsg "        Destroys a branch. ${RED}This action cannot be reversed!"
+	printMsg ""
+	printMsg "    ${UNDERLINE}${DIM}Dangerous commands"
+	printMsg "    ${BOLD}${RED}bgit destroy"
+	printMsg "        Destroys the entire ${CYAN}.bgit${RESET} folder. This does not delete any"
+	printMsg "        other files in this directory, but will destroy all information"
+	printMsg "        that bgit has about this repository. ${RED}This action cannot be reversed!"
+	echo ""
+}
+
+########################################################
+
+doHelper () {
+	printMsg "Hi, I'm the ${CYAN}bgit helper${RESET}. Let's try and resolve"
+	printMsg "your problem!"
 	if [ -d ".bgit" ]; then
 		:
 	else 
@@ -23,31 +65,7 @@ printHelp () {
 		printMsg "${DIM}Try using ${CYAN}bgit init${RESET}${DIM} to get started!"
 		printMsg "${DIM}----------------------------------------------"
 	fi
-
-	echo ""
-	echo "Here's the list of commands!"
-	echo ""
-	printMsg "    ${CYAN}bgit help"
-	printMsg "        Displays this help message. Also tries to debug the current"
-	printMsg "        state of the repository to provide information on what you"
-	printMsg "        can do next."
 	printMsg ""
-	printMsg "    ${CYAN}bgit init"
-	printMsg "        Sets up a default repository, and initializes bgit for use."
-	printMsg ""
-	printMsg "    ${CYAN}bgit info"
-	printMsg "        Display the current working state. This will display"
-	printMsg "        information on what branch you're in, what actions"
-	printMsg "        are available and what you can do."
-	printMsg ""
-	printMsg "    ${CYAN}bgit goto <branch>"
-	printMsg "        Go to a certain branch. Makes the branch if it doesn't already exist"
-	printMsg ""
-	printMsg "    ${RED}bgit destroy"
-	printMsg "        Destroys the entire ${CYAN}.bgit${RESET} repository. This does not delete any"
-	printMsg "        personal files in this directory, but will destroy all information"
-	printMsg "        that bgit had about this repository. ${RED}This action cannot be reversed!"
-	echo ""
 }
 
 ########################################################
@@ -92,6 +110,9 @@ doGoto() {
 case $1 in
 	help)
 		printHelp;;
+
+	helper)
+		doHelper;;
 
 	init)
 		doInit;;
