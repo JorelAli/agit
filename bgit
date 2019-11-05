@@ -1,0 +1,106 @@
+#!/bin/sh
+
+DIM="\e[2m"
+RED="\e[31m"
+RESET="\e[0m"
+CYAN="\e[36m"
+
+########################################################
+
+printMsg () {
+	echo -e "$1${RESET}"
+}
+
+printHelp () {
+	printMsg "Welcome to bGit, a simpler git interface. You are running bGit ${GREEN}0.1" 
+
+	if [ -d ".bgit" ]; then
+		:
+	else 
+		printMsg ""
+		printMsg "${DIM}----------------------------------------------"
+		printMsg "${DIM}Hey, you haven't set up a repository here yet."
+		printMsg "${DIM}Try using ${CYAN}bgit init${RESET}${DIM} to get started!"
+		printMsg "${DIM}----------------------------------------------"
+	fi
+
+	echo ""
+	echo "Here's the list of commands!"
+	echo ""
+	printMsg "    ${CYAN}bgit help"
+	printMsg "        Displays this help message. Also tries to debug the current"
+	printMsg "        state of the repository to provide information on what you"
+	printMsg "        can do next."
+	printMsg ""
+	printMsg "    ${CYAN}bgit init"
+	printMsg "        Sets up a default repository, and initializes bgit for use."
+	printMsg ""
+	printMsg "    ${CYAN}bgit info"
+	printMsg "        Display the current working state. This will display"
+	printMsg "        information on what branch you're in, what actions"
+	printMsg "        are available and what you can do."
+	printMsg ""
+	printMsg "    ${CYAN}bgit goto <branch>"
+	printMsg "        Go to a certain branch. Makes the branch if it doesn't already exist"
+	printMsg ""
+	printMsg "    ${RED}bgit destroy"
+	printMsg "        Destroys the entire ${CYAN}.bgit${RESET} repository. This does not delete any"
+	printMsg "        personal files in this directory, but will destroy all information"
+	printMsg "        that bgit had about this repository. ${RED}This action cannot be reversed!"
+	echo ""
+}
+
+########################################################
+
+askForConfirmation () {
+	printf "Are you sure you want me to make these changes? [y/n] "
+	read -n 1 input
+	echo ""
+	if [ "$input" == "y" ] || [ "$input" == "Y" ]; then
+		return 0 # Success
+	else 
+		return 1 # Error
+	fi
+}
+
+doInit () {
+	if [ -d ".bgit" ]; then
+		:
+	else 
+		printMsg "I'm planning on setting up a new repository."
+		printMsg "This will create a ${CYAN}.bgit${RESET} folder in your current directory."
+		printMsg ""
+
+		askForConfirmation
+		if [ $? -eq 0 ]; then
+			mkdir ".bgit"
+			printMsg "I've created the ${CYAN}.bgit${RESET} directory for you."
+		else 
+			printMsg "Sure thing, I've made no changes."
+		fi
+	fi
+}
+
+########################################################
+
+doGoto() {
+	:
+}
+
+########################################################
+
+case $1 in
+	help)
+		printHelp;;
+
+	init)
+		doInit;;
+
+	goto)
+		doGoto $2;;
+
+	test)
+		;;
+	*)
+		echo "Type 'bgit help' for help" ;;
+esac 
