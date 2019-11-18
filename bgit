@@ -1,5 +1,9 @@
 #!/bin/sh
 
+VERSION="0.1"
+
+# Formatting & Colors
+
 RED="\e[31m"
 CYAN="\e[36m"
 
@@ -8,14 +12,39 @@ RESET="\e[0m"
 BOLD="\e[1m"
 UNDERLINE="\e[4m"
 
-########################################################
+### General helper functions ###########################
+
+stringContains() {
+	if [[ $1 == *$2* ]]; then
+		return 0 # Success
+	else 
+		return 1 # Error
+	fi
+}
+
+### Variables ##########################################
+
+branches=""
+currentBranch=""
+
+### Git helper commands ################################
+
+getCurrentBranch() {
+	currentBranch="$(git symbolic-ref HEAD | cut -d/ -f3-)"
+}
+
+getBranches() {
+	branches="$(git for-each-ref refs/heads --format="%(refname)" | cut -d/ -f3- | tr '\n' ' ' | awk '{$1=$1};1')"
+}
+
+### Help printing ######################################
 
 printMsg () {
 	echo -e "$1${RESET}"
 }
 
 printHelp () {
-	printMsg "Welcome to bGit, a simpler git interface. You are running bGit ${CYAN}0.1" 
+	printMsg "Welcome to bGit, a simpler git interface. You are running bGit ${CYAN}${VERSION}" 
 
 	printMsg ""
 	printMsg "Here's the list of commands:"
@@ -39,6 +68,9 @@ printHelp () {
 	printMsg "    ${CYAN}bgit goto <branch>"
 	printMsg "        Goes to a certain branch. This will create a new branch if"
 	printMsg "        it doesn't already exist"
+	printMsg ""
+	printMsg "    ${CYAN}bgit protect <branch>"
+	printMsg "        Prevents a branch from being deleted"
 	printMsg ""
 	printMsg "    ${CYAN}bgit ${RED}prune ${CYAN}<branch>"
 	printMsg "        Destroys a branch. ${RED}This action cannot be reversed!"
@@ -102,7 +134,32 @@ doInit () {
 ########################################################
 
 doGoto() {
-	:
+	targetBranch=$1
+
+	getCurrentBranch
+	if [ "$targetBranch" = "$currentBranch" ]; then
+		echo "You're already in $targetBranch!"
+		return
+	fi
+
+	getBranches 
+
+	# echo "'$branches'"
+	# echo $targetBranch
+
+	stringContains $branches $targetBranch
+	if [ $? -eq 0 ]; then
+		echo "yes"
+	else
+		printMsg "I'm planning on creating a new branch called ${CYAN}$targetBranch${RESET}."
+		askForConfirmation
+		if [ $? -eq 0 ]; then
+			git checkout -qb $targetBranch
+			printMsg "I've created the branch ${CYAN}$targetBranch${RESET} for you. You are currently in ${CYAN}$targetBranch${RESET}."
+		else 
+			printMsg "I've not made the branch ${CYAN}$targetBranch${RESET}. You are currently in ${CYAN}$currentBranch${RESET}."
+		fi
+	fi
 }
 
 ########################################################
@@ -121,6 +178,19 @@ case $1 in
 		doGoto $2;;
 
 	test)
+		getBranches
+		for branch in $branches; do
+			echo "$branch <-<"
+		done
+
+
+
+		stringContains "hello" "lo"
+		if [ $? -eq 0 ]; then
+			echo "yes"
+		else
+			echo "no"
+		fi
 		;;
 	*)
 		echo "Type 'bgit help' for help" ;;
