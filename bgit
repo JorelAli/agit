@@ -5,6 +5,7 @@ VERSION="0.1"
 # Formatting & Colors
 
 RED="\e[31m"
+GREEN="\e[32m"
 CYAN="\e[36m"
 
 DIM="\e[2m"
@@ -142,14 +143,11 @@ doGoto() {
 		return
 	fi
 
-	getBranches 
-
-	# echo "'$branches'"
-	# echo $targetBranch
-
-	stringContains $branches $targetBranch
+	getBranches
+	stringContains "$branches" "$targetBranch"
 	if [ $? -eq 0 ]; then
-		echo "yes"
+		git checkout -q $targetBranch
+		printMsg "I've moved you from ${CYAN}$currentBranch${RESET} to ${CYAN}$targetBranch${RESET}."
 	else
 		printMsg "I'm planning on creating a new branch called ${CYAN}$targetBranch${RESET}."
 		askForConfirmation
@@ -178,14 +176,14 @@ case $1 in
 		doGoto $2;;
 
 	test)
-		getBranches
-		for branch in $branches; do
-			echo "$branch <-<"
-		done
+		# getBranches
+		# for branch in $branches; do
+		# 	echo "$branch <-<"
+		# done
 
+		echo -e "${GREEN}hi"
 
-
-		stringContains "hello" "lo"
+		stringContains "master test" "test"
 		if [ $? -eq 0 ]; then
 			echo "yes"
 		else
