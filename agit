@@ -45,57 +45,57 @@ printMsg () {
 }
 
 printHelp () {
-	printMsg "Welcome to bGit, a simpler git interface. You are running bGit ${CYAN}${VERSION}" 
+	printMsg "Welcome to agit, a simple git interface. You are running agit ${CYAN}${VERSION}" 
 
 	printMsg ""
 	printMsg "Here's the list of commands:"
 	printMsg ""
 	printMsg "    ${UNDERLINE}${DIM}Information commands"
-	printMsg "    ${CYAN}bgit helper"
-	printMsg "        Runs the ${CYAN}bgit helper${RESET}. This helps identify any"
+	printMsg "    ${CYAN}agit helper"
+	printMsg "        Runs the ${CYAN}agit helper${RESET}. This helps identify any"
 	printMsg "        issues with the state of the repository and advises you on"
 	printMsg "        what you can do next if you get stuck."
 	printMsg ""
-	printMsg "    ${CYAN}bgit info"
+	printMsg "    ${CYAN}agit info"
 	printMsg "        Display the current working state. This will display"
 	printMsg "        information on what branch you're in, what actions"
 	printMsg "        are available and what you can do."
 	printMsg ""
 	printMsg "    ${UNDERLINE}${DIM}Main commands"
-	printMsg "    ${CYAN}bgit init"
-	printMsg "        Sets up a default repository, and initializes bgit for use."
+	printMsg "    ${CYAN}agit init"
+	printMsg "        Sets up a default repository, and initializes agit for use."
 	printMsg ""
 	printMsg "    ${UNDERLINE}${DIM}Branch commands"
-	printMsg "    ${CYAN}bgit goto <branch>"
+	printMsg "    ${CYAN}agit goto <branch>"
 	printMsg "        Goes to a certain branch. This will create a new branch if"
 	printMsg "        it doesn't already exist"
 	printMsg ""
-	printMsg "    ${CYAN}bgit protect <branch>"
+	printMsg "    ${CYAN}agit protect <branch>"
 	printMsg "        Prevents a branch from being deleted"
 	printMsg ""
-	printMsg "    ${CYAN}bgit ${RED}prune ${CYAN}<branch>"
+	printMsg "    ${CYAN}agit ${RED}prune ${CYAN}<branch>"
 	printMsg "        Destroys a branch. ${RED}This action cannot be reversed!"
 	printMsg ""
 	printMsg "    ${UNDERLINE}${DIM}Dangerous commands"
-	printMsg "    ${BOLD}${RED}bgit destroy"
-	printMsg "        Destroys the entire ${CYAN}.bgit${RESET} folder. This does not delete any"
+	printMsg "    ${BOLD}${RED}agit destroy"
+	printMsg "        Destroys the entire ${CYAN}.agit${RESET} folder. This does not delete any"
 	printMsg "        other files in this directory, but will destroy all information"
-	printMsg "        that bgit has about this repository. ${RED}This action cannot be reversed!"
+	printMsg "        that agit has about this repository. ${RED}This action cannot be reversed!"
 	echo ""
 }
 
 ########################################################
 
 doHelper () {
-	printMsg "Hi, I'm the ${CYAN}bgit helper${RESET}. Let's try and resolve"
+	printMsg "Hi, I'm the ${CYAN}agit helper${RESET}. Let's try and resolve"
 	printMsg "your problem!"
-	if [ -d ".bgit" ]; then
+	if [ -d ".agit" ]; then
 		:
 	else 
 		printMsg ""
 		printMsg "${DIM}----------------------------------------------"
 		printMsg "${DIM}Hey, you haven't set up a repository here yet."
-		printMsg "${DIM}Try using ${CYAN}bgit init${RESET}${DIM} to get started!"
+		printMsg "${DIM}Try using ${CYAN}agit init${RESET}${DIM} to get started!"
 		printMsg "${DIM}----------------------------------------------"
 	fi
 	printMsg ""
@@ -115,17 +115,42 @@ askForConfirmation () {
 }
 
 doInit () {
-	if [ -d ".bgit" ]; then
+	if [ -d ".agit" ] || [ -d ".git" ]; then
 		:
+		# If there's a .git and no .agit...
+
+		if [ ! -d ".agit" ] || [ -d ".git" ]; then
+			:
+		fi
+
 	else 
 		printMsg "I'm planning on setting up a new repository."
-		printMsg "This will create a ${CYAN}.bgit${RESET} folder in your current directory."
+		printMsg "This will create a ${CYAN}.agit${RESET} folder in your current directory."
 		printMsg ""
 
 		askForConfirmation
 		if [ $? -eq 0 ]; then
-			mkdir ".bgit"
-			printMsg "I've created the ${CYAN}.bgit${RESET} directory for you."
+			mkdir ".agit"
+			printMsg "I've created the ${CYAN}.agit${RESET} directory for you."
+			git init -q
+
+			if [ ! -f "./README.md" ]; then
+				printMsg ""
+				printMsg "I wasn't able to find a ${CYAN}README.md${RESET} file. Would you like me to make one?"
+				printMsg "(Making a ${CYAN}README.md${RESET} will create a commit titled ${CYAN}Initial commit.${RESET})"
+
+				askForConfirmation
+				if [ $? -eq 0 ]; then
+					printMsg ""
+					echo "#$(basename $(pwd))" > README.md
+					git add README.md
+					git commit -q -m "Initial commit."
+
+					printMsg "I've made a ${CYAN}README.md${RESET} file and made an initial commit."
+				else 
+					printMsg "Okay, I didn't make an initial file."
+				fi
+			fi
 		else 
 			printMsg "Sure thing, I've made no changes."
 		fi
@@ -191,5 +216,5 @@ case $1 in
 		fi
 		;;
 	*)
-		echo "Type 'bgit help' for help" ;;
+		echo "Type 'agit help' for help" ;;
 esac 
