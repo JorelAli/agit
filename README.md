@@ -6,7 +6,7 @@ A simple git wrapper
 
 This project is heavily inspired by [SiliconSloth's Metro](https://github.com/SiliconSloth/Metro) project, which is a simple version control and file syncing system that is written in C++. The _Metro_ project aims to reduce common pitfalls that occur when using `git`, such as messing up a repository to a state where it is easier to just re-clone the repository from a remote.
 
-<center>![Relevant xkcd comic](https://imgs.xkcd.com/comics/git.png)</center>
+![git](https://imgs.xkcd.com/comics/git.png)
 
 ## Design choices
 
