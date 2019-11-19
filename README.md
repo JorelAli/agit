@@ -7,6 +7,7 @@ A simple git wrapper
 This project is heavily inspired by [SiliconSloth's Metro](https://github.com/SiliconSloth/Metro) project, which is a simple version control and file syncing system that is written in C++. The _Metro_ project aims to reduce common pitfalls that occur when using `git`, such as messing up a repository to a state where it is easier to just re-clone the repository from a remote.
 
 <center>![Relevant xkcd comic](https://imgs.xkcd.com/comics/git.png)</center>
+
 ## Design choices
 
 Since _agit_ is just a wrapper for git (in the sense that it doesn't do the fancy file synchronization that _Metro_ does), I chose to write it as a shell script for the _Bourne Shell_ (`#!/bin/sh`), as opposed to the _Bourne Again Shell_, for various reasons:
